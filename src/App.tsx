@@ -6,7 +6,7 @@ function App() {
   const [count, setCount] = useState(0)
   return (
     <>
-      <div>
+      <div className="flex justify-center">
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -14,9 +14,12 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
+      <h1>Vite + React + ESlint + Commitlint + Prettier + Vitest + Tailwind</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button
+          onClick={() => setCount((count) => count + 1)}
+          className="transition-all  hover:scale-125 hover:text-blue-500"
+        >
           count is {count}
         </button>
         <p>
@@ -26,6 +29,7 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <h1 className="text-3xl font-bold underline mt-2">Taiwind is cool</h1>
     </>
   )
 }
