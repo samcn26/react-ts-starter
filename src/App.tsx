@@ -2,31 +2,57 @@ import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
 import cx from 'classnames'
 import './App.css'
 const tabs = ['tab1', 'tab2', 'tab3']
-const Comp = ({ name, className }: any) => {
+interface CompProps {
+  name: string
+  className?: string
+}
+
+const Comp: FC<CompProps> = ({ name, className }) => {
   return (
     <div className={`w-full h-screen overflow-y-auto ${className || ''}`}>
-      <div className="w-full h-[2000px]"></div>
       <div className="text-4xl h-52 font-semibold">{name}</div>
+      <div className="w-full h-[2000px]"></div>
     </div>
   )
 }
 interface FadeInInterface {
   in: boolean
-  hidden: boolean
+  hidden?: boolean
+  className?: string
 }
 const FadeIn: FC<PropsWithChildren<FadeInInterface>> = ({
   in: visible,
   children,
   hidden,
+  className,
 }) => {
   return (
     <div
-      className={`transition-opacity duration-500 ${visible ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${hidden ? 'hidden' : 'block'}`}
+      className={cx(
+        'transition-opacity duration-1000',
+        visible ? 'opacity-100 z-10' : 'opacity-0 z-0',
+        hidden ? 'hidden' : 'block',
+        className
+      )}
     >
       {children}
     </div>
   )
 }
+
+// const useDebounceValue = (value: any, time = 500) => {
+//   const [debounceValue, setDebounceValue] = useState(value)
+//   const timeRef = useRef<any>()
+//   useEffect(() => {
+//     timeRef.current = setTimeout(() => {
+//       setDebounceValue(value)
+//     }, time)
+
+//     return () => clearTimeout(timeRef.current)
+//   }, [value, time])
+
+//   return debounceValue
+// }
 
 function App() {
   const [current, setCurrent] = useState(0)
@@ -50,7 +76,6 @@ function App() {
   }
   const handleClick = (i: number) => {
     if (i === current) return
-    const prvTab = current
     // lazyload
     if (!loadDic[i]) {
       setLoadDic((prv) => ({
@@ -66,27 +91,26 @@ function App() {
 
     setTimeout(() => {
       setCurrent(i)
-    }, 0);
+    }, 0)
   }
 
-  const timerRef = useRef<any>()
+  const timerRef = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
-    clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
-      const data: any = {}
+      const data: Record<string, boolean> = {}
       tabs.forEach((tab, i) => {
         data[tab] = false
-        if(i === current) data[tab] = true
+        if (i === current) data[tab] = true
       })
       setActiveTab(data)
-    }, 500);
+    }, 3000)
 
+    return () => clearTimeout(timerRef.current)
   }, [current])
 
-
   return (
-    <div className="overflow-hidden">
+    <div>
       {
         <div className="flex space-x-4">
           {tabs.map((tab, i) => (
@@ -102,15 +126,20 @@ function App() {
           ))}
         </div>
       }
-      {tabs.map((tab, i) => {
+      <div className="relative w-full">
+        {tabs.map((tab, i) => {
           return (
-            <div key={tab} className='absolute w-full'>
-              <FadeIn in={current === i} hidden={!activeTab[tabs[i]]}>
-                {renderComponent(i)}
-              </FadeIn>
-            </div>
+            <FadeIn
+              key={tab}
+              className="absolute w-full top-0 left-0"
+              in={current === i}
+              hidden={!activeTab[tabs[i]]}
+            >
+              {renderComponent(i)}
+            </FadeIn>
           )
         })}
+      </div>
     </div>
   )
 }
